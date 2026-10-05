@@ -23,7 +23,12 @@ document.body.append(createButton({ text: 'Refresh', onClick: () => refreshYourP
 // On component teardown: disposeTheme(); disposeSelects(); disposeTooltips();
 ```
 
-For Zync's opaque-origin pane, inline the bundled JavaScript and CSS into your packaged HTML. CSS imports need a bundler CSS loader; do not leave a runtime stylesheet URL in the isolated pane. PM2 Monitor demonstrates reading the exported stylesheet during its build and inlining it alongside plugin-specific styles.
+Bundle the JavaScript and CSS into your package. Zync 2.33.8 and newer support
+package-relative pane assets such as `./pane.js` and `./pane.css`; use Vite
+`base: './'` or the equivalent in your bundler. Inline bundles remain an option
+within the pane HTML size limit. Do not load dependencies from CDNs or leave
+root-relative asset paths. The basic SDK starter copies files and needs an added
+bundling step before it can process npm or CSS imports.
 
 ## Theme contract
 
@@ -42,4 +47,9 @@ Put `zui-root` on the pane body or application container for base controls and s
 
 These controls do not create privileged confirmation dialogs. Use the SDK's host-provided API for permissions and dangerous actions. Theme integration is visual, not a security boundary. Test your actual host build and light/dark/custom themes before distributing a plugin.
 
-Release checks: from the Zync root run `npm run ui:release-check`. Then run PM2's unit and browser integration suites and review the exact npm tarball. Publish prereleases under `beta`, not stable. Beta checks are not an independent security audit.
+From this package's own checkout, run `npm run type-check`, `npm test`, and
+`npm pack --dry-run` before releasing it. Test consuming plugins in the installed
+app as well. Publish prereleases under `beta`, not stable. Beta checks are not an
+independent security audit. Plugin authors should follow the community
+[best practices](https://zync.thesudoer.in/docs/plugin-best-practices/) and
+[publishing guide](https://zync.thesudoer.in/docs/plugin-publishing/).
